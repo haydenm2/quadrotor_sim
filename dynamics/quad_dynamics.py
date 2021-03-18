@@ -2,9 +2,7 @@ import sys
 sys.path.append('..')
 import numpy as np
 
-# load message types
 from message_types.msg_state import msg_state
-
 import parameters.quadrotor_parameters as QUAD
 from tools.tools import RotationVehicle2Body
 

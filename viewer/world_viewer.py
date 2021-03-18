@@ -9,45 +9,36 @@ class quad_viewer():
         # initialize Qt gui application and window
         self.app = pg.QtGui.QApplication([])  # initialize QT
         self.window = gl.GLViewWidget()  # initialize the view object
-        self.window.setWindowTitle('Spacecraft Viewer')
+        self.window.setWindowTitle('World Viewer')
         self.window.setGeometry(0, 0, 1000, 1000)  # args: upper_left_x, upper_right_y, width, height
         grid = gl.GLGridItem()  # make a grid to represent the ground
-        grid.scale(20, 20, 20)  # set the size of the grid (distance between each line)
+        grid.scale(10, 10, 10)  # set the size of the grid (distance between each line)
         self.window.addItem(grid) # add grid to viewer
-        self.window.setCameraPosition(distance=200)  # distance from center of plot to camera
+        self.window.setCameraPosition(distance=20)  # distance from center of plot to camera
         self.window.setBackgroundColor('k')  # set background color to black
         self.window.show()  # display configured window
         self.window.raise_()  # bring window to the front
-        self.plot_initialized = False # has the spacecraft been plotted yet?
-        # get points that define the non-rotated, non-translated spacecraft and the mesh colors
-        self.points, self.meshColors = self._get_spacecraft_points()
+        self.plot_initialized = False # has the quadrotor been plotted yet?
+        # get points that define the non-rotated, non-translated quadrotor and the mesh colors
+        self.points, self.meshColors = self._get_quadrotor_points()
 
-    ###################################
-    # public functions
-    def update(self, state):
-        """
-        Update the drawing of the quadrotor.
+    def update(self, quad_state):
+        self.update_quad(quad_state)
+        # redraw
+        self.app.processEvents()
 
-        The input to this function is a (message) class with properties that define the state.
-        The following properties are assumed to be:
-            state.pn  # north position
-            state.pe  # east position
-            state.pd   # down position
-            state.phi  # roll angle
-            state.theta  # pitch angle
-            state.psi  # yaw angle
-        """
-        spacecraft_position = np.array([[state.pn], [state.pe], [state.pd]])  # NED coordinates
-        # attitude of spacecraft as a rotation matrix R from body to inertial
+    def update_quad(self, state):
+        quadrotor_position = np.array([[state.pn], [state.pe], [state.pd]])  # NED coordinates
+        # attitude of quadrotor as a rotation matrix R from body to inertial
         R = self._Euler2Rotation(state.phi, state.theta, state.psi)
-        # rotate and translate points defining spacecraft
+        # rotate and translate points defining quadrotor
         rotated_points = self._rotate_points(self.points, R)
-        translated_points = self._translate_points(rotated_points, spacecraft_position)
+        translated_points = self._translate_points(rotated_points, quadrotor_position)
         # convert North-East Down to East-North-Up for rendering
         R = np.array([[0, 1, 0], [1, 0, 0], [0, 0, -1]])
         translated_points = R @ translated_points
         # convert points to triangular mesh defined as array of three 3D points (Nx3x3)
-        mesh = self._points_to_mesh(translated_points)
+        mesh = self._quadrotor_points_to_mesh(translated_points)
 
         # initialize the drawing the first time update() is called
         if not self.plot_initialized:
@@ -65,7 +56,7 @@ class quad_viewer():
             # reset mesh using rotated and translated points
             self.body.setMeshData(vertexes=mesh, vertexColors=self.meshColors)
 
-        # update the center of the camera view to the spacecraft location
+        # update the center of the camera view to the quadrotor location
         view_location = Vector(state.pe, state.pn, -state.pd)  # defined in ENU coordinates
         self.window.opts['center'] = view_location
         # redraw
@@ -74,26 +65,19 @@ class quad_viewer():
     ###################################
     # private functions
     def _rotate_points(self, points, R):
-        "Rotate points by the rotation matrix R"
         rotated_points = R @ points
         return rotated_points
 
     def _translate_points(self, points, translation):
-        "Translate points by the vector translation"
         translated_points = points + np.dot(translation, np.ones([1,points.shape[1]]))
         return translated_points
 
-    def _get_spacecraft_points(self):
-        """"
-            Points that define the mav, and the colors of the triangular mesh
-            Define the points on the aircraft following diagram in Figure 2.14
-        """
-
-        body_w = 2
-        arm_l = 6
-        prop_w = 3
-        body_off = 0.5
-        prop_off = 0.5
+    def _get_quadrotor_points(self):
+        body_w = 0.33333
+        arm_l = 1
+        prop_w = 0.5
+        body_off = 0.1
+        prop_off = 0.1
 
         #points are in NED coordinates
         points = np.array([[body_w/2, -body_w/2, -body_off],  # point 1
@@ -151,12 +135,7 @@ class quad_viewer():
         meshColors[13] = yellow  # prop 42
         return points, meshColors
 
-    def _points_to_mesh(self, points):
-        """"
-        Converts points to triangular mesh
-        Each mesh face is defined by three 3D points
-          (a rectangle requires two triangular mesh faces)
-        """
+    def _quadrotor_points_to_mesh(self, points):
         points=points.T
         mesh = np.array([[points[0], points[1], points[2]],  # body 1
                          [points[0], points[2], points[3]],  # body 2
@@ -176,9 +155,6 @@ class quad_viewer():
         return mesh
 
     def _Euler2Rotation(self, phi, theta, psi):
-        """
-        Converts euler angles to rotation matrix (R_b^i, i.e., body to inertial)
-        """
         # only call sin and cos once for each angle to speed up rendering
         c_phi = np.cos(phi)
         s_phi = np.sin(phi)
