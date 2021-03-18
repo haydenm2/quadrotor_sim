@@ -2,9 +2,6 @@ import sys
 import numpy as np
 sys.path.append('..')
 import parameters.control_parameters as CON
-import parameters.quadrotor_parameters as QUAD
-# from tools.transfer_function import transfer_function
-# from tools.wrap import wrap
 from controller.lqr_controller import lqr_control
 from message_types.msg_state import msg_state
 
@@ -23,7 +20,7 @@ class controller:
         u = u_tilde + self.trim_input.reshape(-1, 1)
         u_sat = self._saturate(u)
         self.inputs = u_sat.reshape(-1, 1)
-        # self.commanded_state.pn = cmd.
+        self.commanded_state = cmd
         return self.inputs, self.commanded_state
 
     def _saturate(self, u):

@@ -50,7 +50,8 @@ while sim_time < SIM.end_time:
     #-------update viewer-------------
     quad_viewer.update(quad.msg_true_state)  # plot path and MAV
     data_view.update(quad.msg_true_state,  # true states
-                     commanded_state,  # commanded states
+                     estimated_state,
+                     commanded_state,
                      SIM.ts_simulation)
 
     #-------increment time-------------

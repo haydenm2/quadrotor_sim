@@ -22,6 +22,7 @@ def compute_ss_model(quad, trim_state, trim_input):
     # tau_y_star = trim_input.item(2)
     # tau_z_star = trim_input.item(3)
 
+    # TODO: linearize about actual desired trim state
     # pn, pe, pd, u, v, w, phi, theta, psi, p, q, r
     A = np.array([[0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
                   [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
