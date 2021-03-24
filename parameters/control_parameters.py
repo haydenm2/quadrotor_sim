@@ -1,6 +1,7 @@
 import sys
 sys.path.append('..')
 import numpy as np
+import control
 from dynamics.quad_dynamics import quad_dynamics
 from state_model.compute_models import compute_ss_model
 import parameters.quadrotor_parameters as QUAD
@@ -15,13 +16,15 @@ trim_state = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
 trim_input = np.array([QUAD.mass*QUAD.gravity, 0, 0, 0])
 
 A, B = compute_ss_model(quad, trim_state, trim_input)
+C = np.eye(12)
+
 # big value implies more cost for variable, low means low cost
-eN_max = 0.25
-eE_max = 0.25
-eD_max = 0.25
-u_max = 0.5
-v_max = 0.5
-w_max = 0.5
+eN_max = 0.2
+eE_max = 0.2
+eD_max = 0.2
+u_max = 0.1
+v_max = 0.1
+w_max = 0.1
 phi_max = np.deg2rad(0.1)
 theta_max = np.deg2rad(0.1)
 psi_max = np.deg2rad(0.1)
@@ -34,10 +37,10 @@ Q = np.diag((1.0/eN_max**2,  1.0/eE_max**2,    1.0/eD_max**2,
              1.0/phi_max**2, 1.0/theta_max**2, 1.0/psi_max**2,
              1.0/p_max**2,   1.0/q_max**2,     1.0/r_max**2))
 
-f_max = 10
-tau_x_max = 0.1
-tau_y_max = 0.1
-tau_z_max = 0.1
+f_max = 25
+tau_x_max = 0.15
+tau_y_max = 0.15
+tau_z_max = 0.15
 
 R = np.diag((1.0/f_max**2, 1.0/tau_x_max**2, 1.0/tau_y_max**2, 1.0/tau_z_max**2))
 

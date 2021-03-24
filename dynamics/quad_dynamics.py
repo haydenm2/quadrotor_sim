@@ -3,7 +3,9 @@ sys.path.append('..')
 import numpy as np
 
 from message_types.msg_state import msg_state
+from message_types.msg_sensors import msg_sensors
 import parameters.quadrotor_parameters as QUAD
+import parameters.sensor_parameters as SENSOR
 from tools.tools import RotationVehicle2Body
 
 class quad_dynamics:
@@ -22,26 +24,41 @@ class quad_dynamics:
                                 [QUAD.q0],  # (10)
                                 [QUAD.r0]])  # (11)
 
-        # initialize true_state message
+        self.sensor_measurements = msg_sensors()
+        self.sensor_measurements.pn = QUAD.pn0
+        self.sensor_measurements.pe = QUAD.pe0
+        self.sensor_measurements.pd = QUAD.pd0
+        self.sensor_measurements.u = QUAD.u0
+        self.sensor_measurements.v = QUAD.v0
+        self.sensor_measurements.w = QUAD.w0
+        self.sensor_measurements.phi = QUAD.phi0
+        self.sensor_measurements.theta = QUAD.theta0
+        self.sensor_measurements.psi = QUAD.psi0
+        self.sensor_measurements.p = QUAD.p0
+        self.sensor_measurements.q = QUAD.q0
+        self.sensor_measurements.r = QUAD.r0
+
         self.msg_true_state = msg_state()
-        self._update_msg_true_state()
+        self.update_msg_true_state()
+        self.update_sensors()
 
     def update_state(self, inputs):
         # get forces and moments acting on rigid body
-        forces_moments = self._forces_moments(self._state, inputs)
+        forces_moments = self.forces_moments(self._state, inputs)
 
         # Integrate ODE using Runge-Kutta RK4 algorithm
         time_step = self._ts_simulation
-        k1 = self._derivatives(self._state, forces_moments)
-        k2 = self._derivatives(self._state + time_step / 2. * k1, forces_moments)
-        k3 = self._derivatives(self._state + time_step / 2. * k2, forces_moments)
-        k4 = self._derivatives(self._state + time_step * k3, forces_moments)
+        k1 = self.derivatives(self._state, forces_moments)
+        k2 = self.derivatives(self._state + time_step / 2. * k1, forces_moments)
+        k3 = self.derivatives(self._state + time_step / 2. * k2, forces_moments)
+        k4 = self.derivatives(self._state + time_step * k3, forces_moments)
         self._state += time_step / 6 * (k1 + 2 * k2 + 2 * k3 + k4)
 
         # update the message class for the true state
-        self._update_msg_true_state()
+        self.update_msg_true_state()
+        self.update_sensors()
 
-    def _derivatives(self, state, forces_moments):
+    def derivatives(self, state, forces_moments):
         # extract the states
         u = state.item(3)
         v = state.item(4)
@@ -90,7 +107,7 @@ class quad_dynamics:
 
         return x_dot
 
-    def _forces_moments(self, state, inputs):
+    def forces_moments(self, state, inputs):
 
         # define states
         phi = state.item(6)
@@ -115,7 +132,7 @@ class quad_dynamics:
 
         return np.array([[f_total.item(0), f_total.item(1), f_total.item(2), m_total.item(0), m_total.item(1), m_total.item(2)]]).T
 
-    def _update_msg_true_state(self):
+    def update_msg_true_state(self):
         # update the class structure for the true state:
         #   [pn, pe, pd, u, v, w, phi, theta, psi, p, q, r]
         self.msg_true_state.pn = self._state.item(0)
@@ -130,3 +147,17 @@ class quad_dynamics:
         self.msg_true_state.p = self._state.item(9)
         self.msg_true_state.q = self._state.item(10)
         self.msg_true_state.r = self._state.item(11)
+
+    def update_sensors(self):
+        self.sensor_measurements.pn = self._state.item(0) + np.random.randn()*SENSOR.sig_n_pn
+        self.sensor_measurements.pe = self._state.item(1) + np.random.randn()*SENSOR.sig_n_pe
+        self.sensor_measurements.pd = self._state.item(2) + np.random.randn()*SENSOR.sig_n_pd
+        self.sensor_measurements.u = self._state.item(3) + np.random.randn()*SENSOR.sig_n_u
+        self.sensor_measurements.v = self._state.item(4) + np.random.randn()*SENSOR.sig_n_v
+        self.sensor_measurements.w = self._state.item(5) + np.random.randn()*SENSOR.sig_n_w
+        self.sensor_measurements.phi = self._state.item(6) + np.random.randn()*SENSOR.sig_n_phi
+        self.sensor_measurements.theta = self._state.item(7) + np.random.randn()*SENSOR.sig_n_theta
+        self.sensor_measurements.psi = self._state.item(8) + np.random.randn()*SENSOR.sig_n_psi
+        self.sensor_measurements.p = self._state.item(9) + np.random.randn()*SENSOR.sig_n_p
+        self.sensor_measurements.q = self._state.item(10) + np.random.randn()*SENSOR.sig_n_q
+        self.sensor_measurements.r = self._state.item(11) + np.random.randn()*SENSOR.sig_n_r
