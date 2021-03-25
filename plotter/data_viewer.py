@@ -6,97 +6,108 @@ class data_viewer:
         time_window_length = 100
         self.plotter = Plotter(plotting_frequency=20,  # refresh plot every 20 time steps
                                time_window=time_window_length)  # plot last time_window seconds of data
-        self.plotter.use_light_theme()
+        light_theme = True
+
+        if light_theme:
+            self.plotter.use_light_theme()
+            axis_color = 'k'
+            min_hue = 0 #260
+            max_hue = 900 #500
+        else:
+            axis_color = 'w'
+            min_hue = 0
+            max_hue = 900
 
         # set up the plot window
         # define first row
-        pn_plots = PlotboxArgs(plots=['pn', 'pn_e', 'pn_c'],
+
+        pn_plots = PlotboxArgs(plots=['pn', 'pn_c'],
                                labels={'left': 'pn(m)', 'bottom': 'Time (s)'},
                                time_window=time_window_length,
-                              plot_min_hue=0,
-                              plot_max_hue=900,
-                              axis_color='k')
-        pe_plots = PlotboxArgs(plots=['pe', 'pe_e', 'pe_c'],
+                              plot_min_hue=min_hue,
+                              plot_max_hue=max_hue,
+                              axis_color=axis_color)
+        pe_plots = PlotboxArgs(plots=['pe', 'pe_c'],
                                labels={'left': 'pe(m)', 'bottom': 'Time (s)'},
                                time_window=time_window_length,
-                              plot_min_hue=0,
-                              plot_max_hue=900,
-                              axis_color='k')
-        pd_plots = PlotboxArgs(plots=['pd', 'pd_e', 'pd_c'],
+                              plot_min_hue=min_hue,
+                              plot_max_hue=max_hue,
+                              axis_color=axis_color)
+        pd_plots = PlotboxArgs(plots=['pd', 'pd_c'],
                               labels={'left': 'pd(m)', 'bottom': 'Time (s)'},
                               time_window=time_window_length,
-                              plot_min_hue=0,
-                              plot_max_hue=900,
-                              axis_color='k')
+                              plot_min_hue=min_hue,
+                              plot_max_hue=max_hue,
+                              axis_color=axis_color)
         first_row = [pn_plots, pe_plots, pd_plots]
 
         # define second row
-        u_plots = PlotboxArgs(plots=['u', 'u_e', 'u_c'],
+        u_plots = PlotboxArgs(plots=['u', 'u_c'],
                               labels={'left': 'u(m/s)', 'bottom': 'Time (s)'},
                               time_window=time_window_length,
-                              plot_min_hue=0,
-                              plot_max_hue=900,
-                              axis_color='k')
-        v_plots = PlotboxArgs(plots=['v', 'v_e', 'v_c'],
+                              plot_min_hue=min_hue,
+                              plot_max_hue=max_hue,
+                              axis_color=axis_color)
+        v_plots = PlotboxArgs(plots=['v', 'v_c'],
                               labels={'left': 'v(m/s)', 'bottom': 'Time (s)'},
                               time_window=time_window_length,
-                              plot_min_hue=0,
-                              plot_max_hue=900,
-                              axis_color='k')
-        w_plots = PlotboxArgs(plots=['w', 'w_e', 'w_c'],
+                              plot_min_hue=min_hue,
+                              plot_max_hue=max_hue,
+                              axis_color=axis_color)
+        w_plots = PlotboxArgs(plots=['w', 'w_c'],
                               labels={'left': 'w(m/s)', 'bottom': 'Time (s)'},
                               time_window=time_window_length,
-                              plot_min_hue=0,
-                              plot_max_hue=900,
-                              axis_color='k')
+                              plot_min_hue=min_hue,
+                              plot_max_hue=max_hue,
+                              axis_color=axis_color)
         second_row = [u_plots, v_plots, w_plots]
 
         # define third row
-        phi_plots = PlotboxArgs(plots=['phi', 'phi_e', 'phi_c'],
+        phi_plots = PlotboxArgs(plots=['phi', 'phi_c'],
                                 labels={'left': 'phi(deg)', 'bottom': 'Time (s)'},
                                 rad2deg=True,
                                 time_window=time_window_length,
-                              plot_min_hue=0,
-                              plot_max_hue=900,
-                              axis_color='k')
-        theta_plots = PlotboxArgs(plots=['theta', 'theta_e', 'theta_c'],
+                              plot_min_hue=min_hue,
+                              plot_max_hue=max_hue,
+                              axis_color=axis_color)
+        theta_plots = PlotboxArgs(plots=['theta', 'theta_c'],
                                   labels={'left': 'theta(deg)', 'bottom': 'Time (s)'},
                                   rad2deg=True,
                                   time_window=time_window_length,
-                              plot_min_hue=0,
-                              plot_max_hue=900,
-                              axis_color='k')
-        psi_plots = PlotboxArgs(plots=['psi', 'psi_e', 'psi_c'],
+                              plot_min_hue=min_hue,
+                              plot_max_hue=max_hue,
+                              axis_color=axis_color)
+        psi_plots = PlotboxArgs(plots=['psi', 'psi_c'],
                                 labels={'left': 'psi(deg)', 'bottom': 'Time (s)'},
                                 rad2deg=True,
                                 time_window=time_window_length,
-                              plot_min_hue=0,
-                              plot_max_hue=900,
-                              axis_color='k')
+                              plot_min_hue=min_hue,
+                              plot_max_hue=max_hue,
+                              axis_color=axis_color)
         third_row = [phi_plots, theta_plots, psi_plots]
 
         # define fourth row
-        p_plots = PlotboxArgs(plots=['p', 'p_e', 'p_c'],
+        p_plots = PlotboxArgs(plots=['p', 'p_c'],
                               labels={'left': 'p(deg/s)', 'bottom': 'Time (s)'},
                               rad2deg=True,
                               time_window=time_window_length,
-                              plot_min_hue=0,
-                              plot_max_hue=900,
-                              axis_color='k')
-        q_plots = PlotboxArgs(plots=['q', 'q_e', 'q_c'],
+                              plot_min_hue=min_hue,
+                              plot_max_hue=max_hue,
+                              axis_color=axis_color)
+        q_plots = PlotboxArgs(plots=['q', 'q_c'],
                               labels={'left': 'q(deg/s)', 'bottom': 'Time (s)'},
                               rad2deg=True,
                               time_window=time_window_length,
-                              plot_min_hue=0,
-                              plot_max_hue=900,
-                              axis_color='k')
-        r_plots = PlotboxArgs(plots=['r', 'r_e', 'r_c'],
+                              plot_min_hue=min_hue,
+                              plot_max_hue=max_hue,
+                              axis_color=axis_color)
+        r_plots = PlotboxArgs(plots=['r', 'r_c'],
                               labels={'left': 'r(deg)', 'bottom': 'Time (s)'},
                               rad2deg=True,
                               time_window=time_window_length,
-                              plot_min_hue=0,
-                              plot_max_hue=900,
-                              axis_color='k')
+                              plot_min_hue=min_hue,
+                              plot_max_hue=max_hue,
+                              axis_color=axis_color)
         fourth_row = [p_plots, q_plots, r_plots]
         plots = [first_row,
                  second_row,

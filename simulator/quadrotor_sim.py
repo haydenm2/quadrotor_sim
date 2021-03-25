@@ -5,6 +5,7 @@ import parameters.simulation_parameters as SIM
 import time
 
 from plotter.data_viewer import data_viewer
+from plotter.input_viewer import input_viewer
 from controller.controller import controller
 from observer.observer import observer
 from dynamics.quad_dynamics import quad_dynamics
@@ -16,6 +17,7 @@ import parameters.control_parameters as CON
 quad_viewer = quad_viewer()  # initialize the viewer
 data_view = data_viewer()  # initialize view of data plots
 # sensor_view = data_viewer()  # initialize view of data plots
+input_view = input_viewer()
 
 # initialize elements of the architecture
 quad = quad_dynamics(SIM.ts_simulation)
@@ -66,6 +68,7 @@ while sim_time < SIM.end_time:
     #                  measurements,
     #                  measurements,
     #                  SIM.ts_simulation)
+    input_view.update(inputs, CON.trim_input, SIM.ts_simulation)
 
     #------------- increment time -------------
     sim_time += SIM.ts_simulation
