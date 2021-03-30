@@ -38,6 +38,9 @@ class quad_dynamics:
         self.sensor_measurements.q = QUAD.q0
         self.sensor_measurements.r = QUAD.r0
 
+        self.Q = SENSOR.Q_N     # progagation noise
+        self.R = SENSOR.R_N     # sensor noise
+
         self.msg_true_state = msg_state()
         self.update_msg_true_state()
         self.update_sensors()
@@ -53,6 +56,20 @@ class quad_dynamics:
         k3 = self.derivatives(self._state + time_step / 2. * k2, forces_moments)
         k4 = self.derivatives(self._state + time_step * k3, forces_moments)
         self._state += time_step / 6 * (k1 + 2 * k2 + 2 * k3 + k4)
+
+        # Add propagation noise
+        self._state += np.array([[np.random.randn()*self.Q.item((0, 0))],
+                                 [np.random.randn()*self.Q.item((1, 1))],
+                                 [np.random.randn()*self.Q.item((2, 2))],
+                                 [np.random.randn()*self.Q.item((3, 3))],
+                                 [np.random.randn()*self.Q.item((4, 4))],
+                                 [np.random.randn()*self.Q.item((5, 5))],
+                                 [np.random.randn()*self.Q.item((6, 6))],
+                                 [np.random.randn()*self.Q.item((7, 7))],
+                                 [np.random.randn()*self.Q.item((8, 8))],
+                                 [np.random.randn()*self.Q.item((9, 9))],
+                                 [np.random.randn()*self.Q.item((10, 10))],
+                                 [np.random.randn()*self.Q.item((11, 11))]])
 
         # update the message class for the true state
         self.update_msg_true_state()
@@ -149,15 +166,15 @@ class quad_dynamics:
         self.msg_true_state.r = self._state.item(11)
 
     def update_sensors(self):
-        self.sensor_measurements.pn = self._state.item(0) + np.random.randn()*SENSOR.sig_n_pn
-        self.sensor_measurements.pe = self._state.item(1) + np.random.randn()*SENSOR.sig_n_pe
-        self.sensor_measurements.pd = self._state.item(2) + np.random.randn()*SENSOR.sig_n_pd
-        self.sensor_measurements.u = self._state.item(3) + np.random.randn()*SENSOR.sig_n_u
-        self.sensor_measurements.v = self._state.item(4) + np.random.randn()*SENSOR.sig_n_v
-        self.sensor_measurements.w = self._state.item(5) + np.random.randn()*SENSOR.sig_n_w
-        self.sensor_measurements.phi = self._state.item(6) + np.random.randn()*SENSOR.sig_n_phi
-        self.sensor_measurements.theta = self._state.item(7) + np.random.randn()*SENSOR.sig_n_theta
-        self.sensor_measurements.psi = self._state.item(8) + np.random.randn()*SENSOR.sig_n_psi
-        self.sensor_measurements.p = self._state.item(9) + np.random.randn()*SENSOR.sig_n_p
-        self.sensor_measurements.q = self._state.item(10) + np.random.randn()*SENSOR.sig_n_q
-        self.sensor_measurements.r = self._state.item(11) + np.random.randn()*SENSOR.sig_n_r
+        self.sensor_measurements.pn = self._state.item(0) + np.random.randn()*self.R.item((0, 0))
+        self.sensor_measurements.pe = self._state.item(1) + np.random.randn()*self.R.item((1, 1))
+        self.sensor_measurements.pd = self._state.item(2) + np.random.randn()*self.R.item((2, 2))
+        self.sensor_measurements.u = self._state.item(3) + np.random.randn()*self.R.item((3, 3))
+        self.sensor_measurements.v = self._state.item(4) + np.random.randn()*self.R.item((4, 4))
+        self.sensor_measurements.w = self._state.item(5) + np.random.randn()*self.R.item((5, 5))
+        self.sensor_measurements.phi = self._state.item(6) + np.random.randn()*self.R.item((6, 6))
+        self.sensor_measurements.theta = self._state.item(7) + np.random.randn()*self.R.item((7, 7))
+        self.sensor_measurements.psi = self._state.item(8) + np.random.randn()*self.R.item((8, 8))
+        self.sensor_measurements.p = self._state.item(9) + np.random.randn()*self.R.item((9, 9))
+        self.sensor_measurements.q = self._state.item(10) + np.random.randn()*self.R.item((10, 10))
+        self.sensor_measurements.r = self._state.item(11) + np.random.randn()*self.R.item((11, 11))

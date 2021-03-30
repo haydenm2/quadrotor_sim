@@ -9,18 +9,18 @@ import numpy as np
 xhat_0 = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]).T
 
 # Process Covariance Terms
-sig_w_pn = 2.0
-sig_w_pe = 2.0
-sig_w_pd = 2.0
-sig_w_u = 1.0
-sig_w_v = 1.0
-sig_w_w = 1.0
-sig_w_phi = np.deg2rad(0.5)
-sig_w_theta = np.deg2rad(0.5)
-sig_w_psi = np.deg2rad(0.5)
-sig_w_p = np.deg2rad(0.4)
-sig_w_q = np.deg2rad(0.4)
-sig_w_r = np.deg2rad(0.4)
+sig_w_pn = 0.05
+sig_w_pe = 0.05
+sig_w_pd = 0.05
+sig_w_u = 0.01
+sig_w_v = 0.01
+sig_w_w = 0.01
+sig_w_phi = np.deg2rad(0.05)
+sig_w_theta = np.deg2rad(0.05)
+sig_w_psi = np.deg2rad(0.05)
+sig_w_p = np.deg2rad(0.04)
+sig_w_q = np.deg2rad(0.04)
+sig_w_r = np.deg2rad(0.04)
 Q_N = np.diag((sig_w_pn**2, sig_w_pe**2, sig_w_pd**2, sig_w_u**2, sig_w_v**2, sig_w_w**2, sig_w_phi**2, sig_w_theta**2, sig_w_psi**2, sig_w_p**2, sig_w_q**2, sig_w_r**2))
 
 # Noise Covariance Terms
